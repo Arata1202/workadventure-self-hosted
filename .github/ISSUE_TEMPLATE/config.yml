@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/Arata1202/workadventure-self-hosted/security/policy
+    about: Read the security policy and report vulnerabilities privately.
+  - name: Upstream WorkAdventure support
+    url: https://github.com/workadventure/workadventure/issues
+    about: Report WorkAdventure application bugs and feature requests to the upstream project.
