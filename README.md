@@ -264,6 +264,43 @@ SSH_PRIVATE_KEY=<SSH_PRIVATE_KEY>
 
 3. Run the `deploy` workflow manually from GitHub Actions to apply repository changes to the VM
 
+### Set Up Presence Notifications
+
+The [WorkAdventure Presence Notifier](https://github.com/Arata1202/workadventure-presence-notifier) sends periodic snapshots of the users who are currently online to Slack. The `presence` service connects to the internal `back:50051` gRPC endpoint and does not expose an additional host port.
+
+```bash
+# VM
+
+# Move to repository
+cd workadventure-self-hosted
+
+# Edit .env file
+make decrypt
+vi .env
+make encrypt
+
+# Send one test notification to Slack
+npx dotenvx run -- docker compose run --rm presence \
+  --config /etc/presence/config.yaml \
+  --once
+
+# Restart server
+make up-f
+
+# View logs
+make logs P=presence
+```
+
+```env
+# Required
+SLACK_WEBHOOK_URL=<SLACK_INCOMING_WEBHOOK_URL>
+```
+
+Normal daemon mode waits for the configured interval before sending its first notification. Edit `presence/config.yaml` to change the interval or message templates.
+
+> [!NOTE]
+> The notifier sends WorkAdventure display names to the configured Slack workspace. It does not store presence history, IP addresses, coordinates, authentication claims, or tokens. Restrict access to the Slack channel and do not expose the internal gRPC port publicly.
+
 ### Set Up Microsoft Entra ID OIDC
 
 For Google OIDC, see [Set Up Google OIDC](docs/google-oidc.md).

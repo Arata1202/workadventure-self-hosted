@@ -1,0 +1,15 @@
+workadventure:
+  address: "back:50051"
+  room_discovery_interval: "30s"
+  reconnect_interval: "5s"
+  initial_sync_timeout: "2s"
+  request_timeout: "10s"
+
+notification:
+  interval: "30m"
+
+notifiers:
+  slack:
+    message: "Currently online ({{ .Count }}): {{ .Users }}"
+    empty_message: "No users are currently online."
+    user_separator: ", "

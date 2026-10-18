@@ -517,6 +517,20 @@ services:
       - postgres-data:/var/lib/postgresql/data
     restart: ${RESTART_POLICY}
 
+  presence:
+    image: ghcr.io/arata1202/workadventure-presence-notifier:0.1.0
+    environment:
+      - SLACK_WEBHOOK_URL
+    volumes:
+      - ./presence/config.yaml:/etc/presence/config.yaml:ro
+    command:
+      - --config
+      - /etc/presence/config.yaml
+    depends_on:
+      back:
+        condition: service_started
+    restart: ${RESTART_POLICY}
+
 volumes:
   redisdata:
   map-storage-data:
