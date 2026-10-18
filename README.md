@@ -264,6 +264,56 @@ SSH_PRIVATE_KEY=<SSH_PRIVATE_KEY>
 
 3. Run the `deploy` workflow manually from GitHub Actions to apply repository changes to the VM
 
+### Set Up Optional Presence Notifications
+
+The optional [WorkAdventure Presence Notifier](https://github.com/Arata1202/workadventure-presence-notifier) sends periodic snapshots of the users who are currently online to Slack. It connects to the internal `back:50051` gRPC endpoint and does not expose an additional host port.
+
+1. Store the Slack Incoming Webhook URL in the encrypted environment file.
+
+```bash
+make decrypt
+# Add SLACK_WEBHOOK_URL=https://hooks.slack.com/services/...
+make encrypt
+```
+
+2. Send one immediate test notification. This command sends a real Slack message and removes the temporary container when it exits.
+
+```bash
+npx dotenvx run -- docker compose \
+  -f docker-compose.yaml \
+  -f docker-compose.notifier.yaml \
+  run --rm workadventure-presence-notifier \
+  --config /etc/workadventure-presence-notifier/config.yaml \
+  --once
+```
+
+3. Start the notifier in daemon mode after the one-shot check succeeds.
+
+```bash
+npx dotenvx run -- docker compose \
+  -f docker-compose.yaml \
+  -f docker-compose.notifier.yaml \
+  up -d --build workadventure-presence-notifier
+```
+
+Normal daemon mode waits for the configured interval before sending its first notification. Edit `presence-notifier/config.yaml` to change the interval or message templates.
+
+Use the same Compose files to inspect logs or remove the notifier:
+
+```bash
+npx dotenvx run -- docker compose \
+  -f docker-compose.yaml \
+  -f docker-compose.notifier.yaml \
+  logs -f workadventure-presence-notifier
+
+npx dotenvx run -- docker compose \
+  -f docker-compose.yaml \
+  -f docker-compose.notifier.yaml \
+  rm -f -s workadventure-presence-notifier
+```
+
+The notifier sends WorkAdventure display names to the configured Slack workspace. It does not store presence history, IP addresses, coordinates, authentication claims, or tokens. Restrict access to the Slack channel and do not expose the internal gRPC port publicly.
+
 ### Set Up Microsoft Entra ID OIDC
 
 For Google OIDC, see [Set Up Google OIDC](docs/google-oidc.md).
