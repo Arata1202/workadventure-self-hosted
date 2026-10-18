@@ -518,8 +518,6 @@ services:
     restart: ${RESTART_POLICY}
 
   presence:
-    profiles:
-      - presence
     image: workadventure-presence-notifier:integration-16d6270
     build:
       context: https://github.com/Arata1202/workadventure-presence-notifier.git#16d62703befef1674be332e5e4e6c988634f76d3
@@ -535,7 +533,7 @@ services:
     depends_on:
       back:
         condition: service_started
-    restart: ${RESTART_POLICY:-unless-stopped}
+    restart: ${RESTART_POLICY}
 
 volumes:
   redisdata:

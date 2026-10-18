@@ -264,11 +264,11 @@ SSH_PRIVATE_KEY=<SSH_PRIVATE_KEY>
 
 3. Run the `deploy` workflow manually from GitHub Actions to apply repository changes to the VM
 
-### Set Up Optional Presence Notifications
+### Set Up Presence Notifications
 
-The optional [WorkAdventure Presence Notifier](https://github.com/Arata1202/workadventure-presence-notifier) sends periodic snapshots of the users who are currently online to Slack. The `presence` service connects to the internal `back:50051` gRPC endpoint and does not expose an additional host port.
+The [WorkAdventure Presence Notifier](https://github.com/Arata1202/workadventure-presence-notifier) sends periodic snapshots of the users who are currently online to Slack. The `presence` service connects to the internal `back:50051` gRPC endpoint and does not expose an additional host port.
 
-The service uses the `presence` Compose profile, so normal `make up-f` deployments do not start it.
+The service is part of the default Compose stack. Configure `SLACK_WEBHOOK_URL` before running `make up-f`; the notifier exits when the webhook is missing and the configured restart policy will restart it.
 
 1. Store the Slack Incoming Webhook URL in the encrypted environment file.
 
@@ -283,7 +283,7 @@ The commands below run Compose through dotenvx. The decrypted value is injected 
 2. Send one immediate test notification. This command sends a real Slack message and removes the temporary container when it exits.
 
 ```bash
-npx dotenvx run -- docker compose --profile presence run --rm presence \
+npx dotenvx run -- docker compose run --rm presence \
   --config /etc/workadventure-presence-notifier/config.yaml \
   --once
 ```
@@ -291,16 +291,16 @@ npx dotenvx run -- docker compose --profile presence run --rm presence \
 3. Start the notifier in daemon mode after the one-shot check succeeds.
 
 ```bash
-npx dotenvx run -- docker compose --profile presence up -d --build presence
+npx dotenvx run -- docker compose up -d --build presence
 ```
 
 Normal daemon mode waits for the configured interval before sending its first notification. Edit `presence/config.yaml` to change the interval or message templates.
 
-Inspect logs or remove the notifier with the same profile:
+Inspect logs or remove the notifier:
 
 ```bash
-npx dotenvx run -- docker compose --profile presence logs -f presence
-npx dotenvx run -- docker compose --profile presence rm -f -s presence
+npx dotenvx run -- docker compose logs -f presence
+npx dotenvx run -- docker compose rm -f -s presence
 ```
 
 The notifier sends WorkAdventure display names to the configured Slack workspace. It does not store presence history, IP addresses, coordinates, authentication claims, or tokens. Restrict access to the Slack channel and do not expose the internal gRPC port publicly.
