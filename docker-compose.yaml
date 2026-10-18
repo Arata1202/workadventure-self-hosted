@@ -517,6 +517,26 @@ services:
       - postgres-data:/var/lib/postgresql/data
     restart: ${RESTART_POLICY}
 
+  presence:
+    profiles:
+      - presence
+    image: workadventure-presence-notifier:integration-16d6270
+    build:
+      context: https://github.com/Arata1202/workadventure-presence-notifier.git#16d62703befef1674be332e5e4e6c988634f76d3
+      args:
+        VERSION: integration-16d6270
+    environment:
+      - SLACK_WEBHOOK_URL
+    volumes:
+      - ./presence/config.yaml:/etc/workadventure-presence-notifier/config.yaml:ro
+    command:
+      - --config
+      - /etc/workadventure-presence-notifier/config.yaml
+    depends_on:
+      back:
+        condition: service_started
+    restart: ${RESTART_POLICY:-unless-stopped}
+
 volumes:
   redisdata:
   map-storage-data:
