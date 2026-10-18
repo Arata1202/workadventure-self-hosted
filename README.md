@@ -1,14 +1,10 @@
 # WorkAdventure Self-Hosted
 
+[![License](https://img.shields.io/github/license/Arata1202/workadventure-self-hosted)](LICENSE)
+
 A community-maintained self-hosting setup for [WorkAdventure](https://workadventu.re) using Docker Compose and Terraform.
 
 This project is not affiliated with or endorsed by the WorkAdventure core team. WorkAdventure is developed by [TheCodingMachine](https://www.thecodingmachine.com/). See the [upstream repository](https://github.com/workadventure/workadventure) for the official source code and documentation.
-
-<div align="right">
-
-![GitHub License](https://img.shields.io/github/license/Arata1202/workadventure-self-hosted)
-
-</div>
 
 ## What this repository provides
 
