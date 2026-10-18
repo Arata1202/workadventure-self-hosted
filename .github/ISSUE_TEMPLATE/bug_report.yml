@@ -1,0 +1,101 @@
+name: Bug report
+description: Report a reproducible problem with this self-hosting setup
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a bug. Remove all secrets and production identifiers before submitting.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected area
+      options:
+        - Docker Compose
+        - Terraform for AWS
+        - Terraform for Azure
+        - Maps
+        - GitHub Actions
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: revision
+    attributes:
+      label: Repository version
+      description: Provide the commit SHA or branch revision you deployed.
+      placeholder: 4b732d0
+    validations:
+      required: true
+
+  - type: input
+    id: workadventure_version
+    attributes:
+      label: WorkAdventure version
+      placeholder: v1.34.2
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Provide sanitized OS, architecture, Docker, Terraform, and cloud-provider versions as applicable.
+      placeholder: Ubuntu 24.04, linux/amd64, Docker 28, Azure
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Problem description
+      description: Explain what happened and how it affects the deployment.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Configure ...
+        2. Run ...
+        3. Observe ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Sanitized logs or configuration
+      description: Remove credentials, decrypted values, hostnames, IP addresses, resource IDs, tenant IDs, and user data.
+      render: shell
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Additional context
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Submission checks
+      options:
+        - label: I searched existing issues and did not find a duplicate.
+          required: true
+        - label: I confirmed that this concerns this deployment repository rather than the upstream WorkAdventure application.
+          required: true
+        - label: I removed secrets and production-specific identifiers.
+          required: true
+        - label: This is not a security vulnerability. I will follow SECURITY.md for security reports.
+          required: true

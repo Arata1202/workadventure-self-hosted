@@ -1,0 +1,62 @@
+name: Feature request
+description: Suggest an improvement to this self-hosting setup
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Docker Compose
+        - Terraform for AWS
+        - Terraform for Azure
+        - Maps
+        - GitHub Actions
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What deployment or maintenance need should this change address?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the desired behavior or configuration.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Include existing WorkAdventure or infrastructure features that could solve the problem.
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: Deployment impact
+      description: Describe compatibility, migration, downtime, cost, privacy, or security implications.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Submission checks
+      options:
+        - label: I searched existing issues and did not find a duplicate.
+          required: true
+        - label: This request concerns the self-hosting setup rather than the upstream WorkAdventure application.
+          required: true
+        - label: I have not included secrets or production-specific identifiers.
+          required: true

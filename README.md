@@ -10,6 +10,10 @@ This project is not affiliated with or endorsed by the WorkAdventure core team. 
 
 </div>
 
+## Community and Security
+
+Contributions are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening an issue or pull request. Report vulnerabilities privately according to [SECURITY.md](SECURITY.md).
+
 ## Getting Started
 
 - This guide supports both AWS EC2 and Azure VM with Terraform.
