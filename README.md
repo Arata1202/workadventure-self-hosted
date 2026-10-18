@@ -268,42 +268,38 @@ SSH_PRIVATE_KEY=<SSH_PRIVATE_KEY>
 
 The [WorkAdventure Presence Notifier](https://github.com/Arata1202/workadventure-presence-notifier) sends periodic snapshots of the users who are currently online to Slack. The `presence` service connects to the internal `back:50051` gRPC endpoint and does not expose an additional host port.
 
-The service is part of the default Compose stack. Configure `SLACK_WEBHOOK_URL` before running `make up-f`; the notifier exits when the webhook is missing and the configured restart policy will restart it.
-
-1. Store the Slack Incoming Webhook URL in the encrypted environment file.
-
 ```bash
+# VM
+
+# Move to repository
+cd workadventure-self-hosted
+
+# Edit .env file
 make decrypt
-# Add SLACK_WEBHOOK_URL=https://hooks.slack.com/services/...
+vi .env
 make encrypt
-```
 
-The commands below run Compose through dotenvx. The decrypted value is injected into the process environment and forwarded to the container without being stored in `docker-compose.yaml`.
-
-2. Send one immediate test notification. This command sends a real Slack message and removes the temporary container when it exits.
-
-```bash
+# Send one test notification to Slack
 npx dotenvx run -- docker compose run --rm presence \
   --config /etc/presence/config.yaml \
   --once
+
+# Restart server
+make up-f
+
+# View logs
+make logs P=presence
 ```
 
-3. Start the notifier in daemon mode after the one-shot check succeeds.
-
-```bash
-npx dotenvx run -- docker compose up -d --build presence
+```env
+# Required
+SLACK_WEBHOOK_URL=<SLACK_INCOMING_WEBHOOK_URL>
 ```
 
 Normal daemon mode waits for the configured interval before sending its first notification. Edit `presence/config.yaml` to change the interval or message templates.
 
-Inspect logs or remove the notifier:
-
-```bash
-npx dotenvx run -- docker compose logs -f presence
-npx dotenvx run -- docker compose rm -f -s presence
-```
-
-The notifier sends WorkAdventure display names to the configured Slack workspace. It does not store presence history, IP addresses, coordinates, authentication claims, or tokens. Restrict access to the Slack channel and do not expose the internal gRPC port publicly.
+> [!NOTE]
+> The notifier sends WorkAdventure display names to the configured Slack workspace. It does not store presence history, IP addresses, coordinates, authentication claims, or tokens. Restrict access to the Slack channel and do not expose the internal gRPC port publicly.
 
 ### Set Up Microsoft Entra ID OIDC
 
