@@ -526,10 +526,10 @@ services:
     environment:
       - SLACK_WEBHOOK_URL
     volumes:
-      - ./presence/config.yaml:/etc/workadventure-presence-notifier/config.yaml:ro
+      - ./presence/config.yaml:/etc/presence/config.yaml:ro
     command:
       - --config
-      - /etc/workadventure-presence-notifier/config.yaml
+      - /etc/presence/config.yaml
     depends_on:
       back:
         condition: service_started

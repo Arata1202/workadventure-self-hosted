@@ -284,7 +284,7 @@ The commands below run Compose through dotenvx. The decrypted value is injected 
 
 ```bash
 npx dotenvx run -- docker compose run --rm presence \
-  --config /etc/workadventure-presence-notifier/config.yaml \
+  --config /etc/presence/config.yaml \
   --once
 ```
 
