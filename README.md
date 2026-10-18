@@ -10,6 +10,38 @@ This project is not affiliated with or endorsed by the WorkAdventure core team. 
 
 </div>
 
+## What this repository provides
+
+- Terraform configurations for AWS EC2 and Azure VM deployments
+- A Docker Compose stack for running WorkAdventure and its supporting services
+- HTTPS routing and ACME certificate management with Traefik
+- Encrypted environment configuration with dotenvx
+- Manual GitHub Actions workflows for stack deployment and map uploads
+- Optional integrations for Microsoft Entra ID OIDC, Matrix/Synapse, LiveKit, TURN, recording storage, and Slack presence notifications
+
+## Contents
+
+- [What this repository provides](#what-this-repository-provides)
+- [Architecture](#architecture)
+- [Community and Security](#community-and-security)
+- [Getting Started](#getting-started)
+  - [Upload a map](#upload-a-map-edited-with-tiled)
+  - [Set up GitHub Actions](#set-up-github-actions)
+  - [Set up presence notifications](#set-up-presence-notifications)
+  - [Set up Microsoft Entra ID OIDC](#set-up-microsoft-entra-id-oidc)
+  - [Set up LiveKit](#set-up-livekit)
+  - [Set up Coturn](#set-up-coturn)
+  - [Set up Matrix/Synapse](#set-up-matrix)
+  - [Set up Egress with RustFS](#set-up-egress-with-rustfs)
+
+## Architecture
+
+![High-level architecture of WorkAdventure Self-Hosted](docs/architecture/workadventure-self-hosted-architecture.png)
+
+This diagram focuses on the infrastructure and integrations maintained by this repository. WorkAdventure's upstream application services are intentionally represented as a single stack.
+
+[Open the editable Excalidraw source](docs/architecture/workadventure-self-hosted-architecture.excalidraw).
+
 ## Community and Security
 
 Contributions are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening an issue or pull request. Report vulnerabilities privately according to [SECURITY.md](SECURITY.md).
