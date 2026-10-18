@@ -1,6 +1,12 @@
+# WorkAdventure Self-Hosted
+
+A community-maintained self-hosting setup for [WorkAdventure](https://workadventu.re) using Docker Compose and Terraform.
+
+This project is not affiliated with or endorsed by the WorkAdventure core team. WorkAdventure is developed by [TheCodingMachine](https://www.thecodingmachine.com/). See the [upstream repository](https://github.com/workadventure/workadventure) for the official source code and documentation.
+
 <div align="right">
 
-![GitHub License](https://img.shields.io/github/license/Arata1202/WorkAdventure)
+![GitHub License](https://img.shields.io/github/license/Arata1202/workadventure-self-hosted)
 
 </div>
 
@@ -14,8 +20,8 @@
 # Local
 
 # Clone repository
-git clone https://github.com/Arata1202/WorkAdventure.git
-cd WorkAdventure
+git clone https://github.com/Arata1202/workadventure-self-hosted.git
+cd workadventure-self-hosted
 
 # Install dependencies
 make wa-init
@@ -35,7 +41,7 @@ ssh-keygen -t ed25519 -C "workadventure" -f ~/.ssh/workadventure -N ""
 # Local
 
 # Move to repository
-cd WorkAdventure
+cd workadventure-self-hosted
 cd terraform/aws # or terraform/azure
 
 # Prepare and edit local values
@@ -91,8 +97,8 @@ ssh workadventure
 # VM
 
 # Clone repository
-git clone https://github.com/Arata1202/WorkAdventure.git
-cd WorkAdventure
+git clone https://github.com/Arata1202/workadventure-self-hosted.git
+cd workadventure-self-hosted
 
 # Set up Ubuntu
 ./ubuntu/setup.sh
@@ -110,7 +116,7 @@ make wa-init
 # VM
 
 # Move to repository
-cd WorkAdventure
+cd workadventure-self-hosted
 
 # Remove existing .env file
 rm -f .env
@@ -143,7 +149,7 @@ MAP_STORAGE_AUTHENTICATION_PASSWORD=<UNIQUE_RANDOM_32_HEX>
 # VM
 
 # Move to repository
-cd WorkAdventure
+cd workadventure-self-hosted
 
 # Encrypt .env file
 make encrypt
@@ -160,7 +166,7 @@ Back up `.env.keys` securely. It is required to decrypt `.env` and must not be c
 # VM
 
 # Move to repository
-cd WorkAdventure
+cd workadventure-self-hosted
 
 # Edit .env file
 make decrypt
@@ -190,7 +196,7 @@ FEATURE_FLAG_BROADCAST_AREAS=true
 # Local
 
 # Move to repository
-cd WorkAdventure
+cd workadventure-self-hosted
 
 # Prepare .env file
 cp maps/.env.example maps/.env
@@ -212,7 +218,7 @@ Upload directory: maps
 # VM
 
 # Move to repository
-cd WorkAdventure
+cd workadventure-self-hosted
 
 # Edit .env file
 make decrypt
@@ -285,7 +291,7 @@ For Google OIDC, see [Set Up Google OIDC](docs/google-oidc.md).
 # VM
 
 # Move to repository
-cd WorkAdventure
+cd workadventure-self-hosted
 
 # Edit .env file
 make decrypt
@@ -317,7 +323,7 @@ DISABLE_ANONYMOUS=true
 # VM
 
 # Move to repository
-cd WorkAdventure
+cd workadventure-self-hosted
 
 # Generate random strings for .env values
 openssl rand -hex 32
@@ -353,7 +359,7 @@ MAX_PER_GROUP=<NUMBER>
 # VM
 
 # Move to repository
-cd WorkAdventure
+cd workadventure-self-hosted
 
 # Generate random strings for .env values
 openssl rand -hex 32
@@ -380,7 +386,7 @@ STUN_SERVER=stun:stun.l.google.com:19302
 # VM
 
 # Move to repository
-cd WorkAdventure
+cd workadventure-self-hosted
 
 # Generate random strings for .env values
 openssl rand -hex 16
@@ -441,7 +447,7 @@ POSTGRES_PASSWORD=<UNIQUE_RANDOM_32_HEX>
 # VM
 
 # Move to repository
-cd WorkAdventure
+cd workadventure-self-hosted
 
 # Generate random strings for .env values
 openssl rand -hex 32
