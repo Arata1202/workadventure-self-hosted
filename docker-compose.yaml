@@ -518,11 +518,7 @@ services:
     restart: ${RESTART_POLICY}
 
   presence:
-    image: workadventure-presence-notifier:integration-16d6270
-    build:
-      context: https://github.com/Arata1202/workadventure-presence-notifier.git#16d62703befef1674be332e5e4e6c988634f76d3
-      args:
-        VERSION: integration-16d6270
+    image: ghcr.io/arata1202/workadventure-presence-notifier:0.1.0
     environment:
       - SLACK_WEBHOOK_URL
     volumes:
