@@ -300,12 +300,7 @@ SSH_PRIVATE_KEY=<SSH_PRIVATE_KEY>
 
 The [WorkAdventure Presence Notifier](https://github.com/Arata1202/workadventure-presence-notifier) maintains one event-driven Slack status showing the users who are currently online. The `presence` service connects to the internal `back:50051` gRPC endpoint and does not expose an additional host port.
 
-1. Create or select a Slack app.
-2. Add the `chat:write` bot token scope and install the app to the workspace.
-3. Invite the bot to the channel configured in `presence/config.yaml`.
-4. Store the Bot User OAuth Token in the encrypted `.env` file as `SLACK_BOT_TOKEN`.
-
-No event subscription, App-Level Token, history-reading scope, or Incoming Webhook is required.
+Complete the notifier's [Slack app setup](https://github.com/Arata1202/workadventure-presence-notifier#slack-app-setup) first. This deployment stores the Bot User OAuth Token in the encrypted `.env` file as `SLACK_BOT_TOKEN` and sets the target channel in `presence/config.yaml`.
 
 ```bash
 # VM
