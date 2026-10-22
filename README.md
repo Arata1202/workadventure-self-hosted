@@ -229,21 +229,30 @@ SECURITY_EMAIL=<EMAIL_ADDRESS>
 # Move to repository
 cd workadventure-self-hosted
 
-# Prepare .env file
+# Initialize the official Map Starter Kit submodule and dependencies
+make wa-init
+
+# Prepare local upload settings
 cp maps/.env.example maps/.env
 
-# Preview the map locally
+# Copy the tracked map content into the official Starter Kit workspace
+make wa-prepare
+
+# Preview the map locally using the official Starter Kit
 make wa-dev
 
-# Edit the map file (maps/office.tmj) using Tiled
+# Edit tools/map-starter-kit/office.tmj using Tiled
 
-# Upload the map
+# Save the edited content back to maps/ and clean the submodule
+make wa-save
+
+# Rebuild from the saved content and upload the map
 make wa-upload
-
-Please enter your Map storage URL: https://<YOUR_FQDN>/map-storage/
-Please enter your API Key: <MAP_STORAGE_AUTHENTICATION_TOKEN>
-Upload directory: maps
 ```
+
+The tracked `maps/` directory is the source of truth for completed map content. The official Starter Kit is pinned at `tools/map-starter-kit/` as a submodule and is used only as a temporary editing, build, and upload workspace. Use `make wa-clean` to discard workspace changes instead of saving them.
+
+Run `make wa-update` when you want to move the submodule to the latest official `master` revision, then review and commit the updated submodule pointer.
 
 ```bash
 # VM

@@ -11,55 +11,66 @@ permissions:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: maps
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: "20"
           registry-url: "https://registry.npmjs.org"
+          cache: npm
+          cache-dependency-path: tools/map-starter-kit/package-lock.json
 
       - name: Install Dependencies
-        run: npm install
+        run: npm ci
+        working-directory: tools/map-starter-kit
+
+      - name: Prepare Map Workspace
+        run: ./scripts/map-workspace.sh prepare
 
       - name: Build project
-        run: npm run build
+        run: npm run buildmap
+        working-directory: tools/map-starter-kit
 
       - name: Extract UPLOAD_MODE from Environment Variables
+        env:
+          UPLOAD_MODE_SECRET: ${{ secrets.UPLOAD_MODE }}
         run: |
-          if [ -z "${{ secrets.UPLOAD_MODE }}" ]; then
+          if [ -z "$UPLOAD_MODE_SECRET" ]; then
             echo "Error: UPLOAD_MODE is not set in GitHub Secrets."
             exit 1
           fi
-          echo "UPLOAD_MODE=${{ secrets.UPLOAD_MODE }}" >> $GITHUB_ENV
+          echo "UPLOAD_MODE=$UPLOAD_MODE_SECRET" >> "$GITHUB_ENV"
 
       - name: Set up Environment Variables
+        env:
+          MAP_STORAGE_API_KEY_SECRET: ${{ secrets.MAP_STORAGE_API_KEY }}
+          MAP_STORAGE_URL_SECRET: ${{ secrets.MAP_STORAGE_URL }}
+          UPLOAD_DIRECTORY_SECRET: ${{ secrets.UPLOAD_DIRECTORY }}
+          REPOSITORY_NAME: ${{ github.event.repository.name }}
         run: |
-          if [ "${{ secrets.UPLOAD_MODE }}" = "MAP_STORAGE" ]; then
-            if [ -z "${{ secrets.MAP_STORAGE_API_KEY }}" ]; then
+          if [ "$UPLOAD_MODE" = "MAP_STORAGE" ]; then
+            if [ -z "$MAP_STORAGE_API_KEY_SECRET" ]; then
               echo "Error: MAP_STORAGE_API_KEY is not set in GitHub Secrets."
               exit 1
             fi
-            if [ -z "${{ secrets.MAP_STORAGE_URL }}" ]; then
+            if [ -z "$MAP_STORAGE_URL_SECRET" ]; then
               echo "Error: MAP_STORAGE_URL is not set in GitHub Secrets."
               exit 1
             fi
-            echo "MAP_STORAGE_API_KEY=${{ secrets.MAP_STORAGE_API_KEY }}" >> $GITHUB_ENV
-            echo "MAP_STORAGE_URL=${{ secrets.MAP_STORAGE_URL }}" >> $GITHUB_ENV
+            echo "MAP_STORAGE_API_KEY=$MAP_STORAGE_API_KEY_SECRET" >> "$GITHUB_ENV"
+            echo "MAP_STORAGE_URL=$MAP_STORAGE_URL_SECRET" >> "$GITHUB_ENV"
 
-            if [ -n "${{ secrets.UPLOAD_DIRECTORY }}" ]; then
-              echo "UPLOAD_DIRECTORY=${{ secrets.UPLOAD_DIRECTORY }}" >> $GITHUB_ENV
+            if [ -n "$UPLOAD_DIRECTORY_SECRET" ]; then
+              echo "UPLOAD_DIRECTORY=$UPLOAD_DIRECTORY_SECRET" >> "$GITHUB_ENV"
             else
-              USERNAME=${{ github.repository_owner }}
-              REPO=${{ github.event.repository.name }}
-              UPLOAD_DIRECTORY="${USERNAME}-${REPO}"
-              echo "UPLOAD_DIRECTORY=$UPLOAD_DIRECTORY" >> $GITHUB_ENV
+              UPLOAD_DIRECTORY="${GITHUB_REPOSITORY_OWNER}-${REPOSITORY_NAME}"
+              echo "UPLOAD_DIRECTORY=$UPLOAD_DIRECTORY" >> "$GITHUB_ENV"
               echo "Warning: UPLOAD_DIRECTORY was not found; set to $UPLOAD_DIRECTORY."
             fi
           fi
@@ -67,12 +78,12 @@ jobs:
       - name: Deploy using WA Map Storage
         if: ${{ env.UPLOAD_MODE == 'MAP_STORAGE' }}
         run: npm run upload-only
+        working-directory: tools/map-starter-kit
 
       - name: Deploy using Github Pages
         if: ${{ env.UPLOAD_MODE == 'GH_PAGES' }}
-        uses: JamesIves/github-pages-deploy-action@releases/v3
+        uses: JamesIves/github-pages-deploy-action@v4.9.0
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: gh-pages
-          FOLDER: maps/dist/
-          BASE_BRANCH: master
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: gh-pages
+          folder: tools/map-starter-kit/dist/
