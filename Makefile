@@ -68,14 +68,38 @@ decrypt:
 	@npx dotenvx decrypt
 
 # WorkAdventure
+MAP_TOOL := tools/map-starter-kit
+MAP_ENV := maps/.env
+MAP_DR := npx dotenvx run -f ${MAP_ENV} --
 
 wa-init:
-	@npm install && cd maps && npm install
+	@npm ci
+	@git submodule update --init --recursive
+	@cd ${MAP_TOOL} && npm ci
 
-wa-dev:
-	@cd maps && ${DR} npm run dev
+wa-prepare:
+	@./scripts/map-workspace.sh prepare
 
-wa-upload:
-	@cd maps && ${DR} npm run upload
+wa-dev: wa-prepare
+	@${MAP_DR} npm --prefix ${MAP_TOOL} run dev
 
-.PHONY: exec up up-f stop restart logs ps encrypt decrypt wa-init wa-dev wa-upload
+wa-build: wa-prepare
+	@cd ${MAP_TOOL} && npm run buildmap
+
+wa-upload: wa-prepare
+	@${MAP_DR} npm --prefix ${MAP_TOOL} run upload
+
+wa-save:
+	@./scripts/map-workspace.sh save
+
+wa-clean:
+	@./scripts/map-workspace.sh clean
+
+wa-update:
+	@./scripts/map-workspace.sh update
+	@cd ${MAP_TOOL} && npm ci
+
+wa-status:
+	@./scripts/map-workspace.sh status
+
+.PHONY: exec up up-f stop restart logs ps encrypt decrypt wa-init wa-prepare wa-dev wa-build wa-upload wa-save wa-clean wa-update wa-status

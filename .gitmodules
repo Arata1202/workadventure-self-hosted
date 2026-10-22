@@ -1,0 +1,4 @@
+[submodule "tools/map-starter-kit"]
+	path = tools/map-starter-kit
+	url = https://github.com/workadventure/map-starter-kit.git
+	branch = master
