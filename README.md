@@ -298,7 +298,14 @@ SSH_PRIVATE_KEY=<SSH_PRIVATE_KEY>
 
 ### Set Up Presence Notifications
 
-The [WorkAdventure Presence Notifier](https://github.com/Arata1202/workadventure-presence-notifier) sends periodic snapshots of the users who are currently online to Slack. The `presence` service connects to the internal `back:50051` gRPC endpoint and does not expose an additional host port.
+The [WorkAdventure Presence Notifier](https://github.com/Arata1202/workadventure-presence-notifier) maintains one event-driven Slack status showing the users who are currently online. The `presence` service connects to the internal `back:50051` gRPC endpoint and does not expose an additional host port.
+
+1. Create or select a Slack app.
+2. Add the `chat:write` bot token scope and install the app to the workspace.
+3. Invite the bot to the channel configured in `presence/config.yaml`.
+4. Store the Bot User OAuth Token in the encrypted `.env` file as `SLACK_BOT_TOKEN`.
+
+No event subscription, App-Level Token, history-reading scope, or Incoming Webhook is required.
 
 ```bash
 # VM
@@ -306,32 +313,35 @@ The [WorkAdventure Presence Notifier](https://github.com/Arata1202/workadventure
 # Move to repository
 cd workadventure-self-hosted
 
-# Edit .env file
+# Edit and encrypt the Bot User OAuth Token
 make decrypt
 vi .env
 make encrypt
 
-# Send one test notification to Slack
+# Build the notifier test image pinned to PR #5 commit 338a401
+npx dotenvx run -- docker compose build presence
+
+# Publish one current status and leave it in Slack for validation
 npx dotenvx run -- docker compose run --rm presence \
   --config /etc/presence/config.yaml \
   --once
 
-# Restart server
-make up-f
+# Start or recreate only the notifier daemon
+make up-f P=presence
 
 # View logs
 make logs P=presence
 ```
 
 ```env
-# Required
-SLACK_WEBHOOK_URL=<SLACK_INCOMING_WEBHOOK_URL>
+# Required and secret
+SLACK_BOT_TOKEN=<SLACK_BOT_USER_OAUTH_TOKEN>
 ```
 
-Normal daemon mode waits for the configured interval before sending its first notification. Edit `presence/config.yaml` to change the interval or message templates.
+Normal daemon mode publishes a synchronized non-empty status after startup, debounces presence changes for five seconds, and deletes its status when the office becomes empty or the daemon shuts down cleanly. Edit `presence/config.yaml` to change the debounce, destination, or message template.
 
 > [!NOTE]
-> The notifier sends WorkAdventure display names to the configured Slack workspace. It does not store presence history, IP addresses, coordinates, authentication claims, or tokens. Restrict access to the Slack channel and do not expose the internal gRPC port publicly.
+> The notifier sends WorkAdventure display names to the configured Slack workspace and stores only Slack message references in the private `presence-state` volume. It does not store presence history, IP addresses, coordinates, authentication claims, or tokens. Restrict access to the Slack channel and do not expose the internal gRPC port publicly.
 
 ### Set Up Microsoft Entra ID OIDC
 

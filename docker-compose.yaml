@@ -518,11 +518,15 @@ services:
     restart: ${RESTART_POLICY}
 
   presence:
-    image: ghcr.io/arata1202/workadventure-presence-notifier:0.1.0
+    image: ghcr.io/arata1202/workadventure-presence-notifier:0.2.0
+    build:
+      context: https://github.com/Arata1202/workadventure-presence-notifier.git#338a401ff595c21e02583296e78dcc88b84993ed
+    stop_grace_period: 20s
     environment:
-      - SLACK_WEBHOOK_URL
+      - SLACK_BOT_TOKEN
     volumes:
       - ./presence/config.yaml:/etc/presence/config.yaml:ro
+      - presence-state:/var/lib/workadventure-presence-notifier
     command:
       - --config
       - /etc/presence/config.yaml
@@ -536,3 +540,4 @@ volumes:
   map-storage-data:
   synapse-data:
   postgres-data:
+  presence-state:
