@@ -318,9 +318,6 @@ make decrypt
 vi .env
 make encrypt
 
-# Build the notifier test image pinned to PR #5 commit 338a401
-npx dotenvx run -- docker compose build presence
-
 # Publish one current status and leave it in Slack for validation
 npx dotenvx run -- docker compose run --rm presence \
   --config /etc/presence/config.yaml \
