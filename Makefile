@@ -84,7 +84,7 @@ wa-dev: wa-prepare
 	@${MAP_DR} npm --prefix ${MAP_TOOL} run dev
 
 wa-build: wa-prepare
-	@cd ${MAP_TOOL} && npm run buildmap
+	@${MAP_DR} npm --prefix ${MAP_TOOL} run buildmap
 
 wa-upload: wa-prepare
 	@${MAP_DR} npm --prefix ${MAP_TOOL} run upload

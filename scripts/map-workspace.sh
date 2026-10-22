@@ -12,7 +12,9 @@ usage() {
 }
 
 require_submodule() {
-  if ! git -C "$TOOL_DIR" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  local tool_root
+  tool_root="$(git -C "$TOOL_DIR" rev-parse --show-toplevel 2>/dev/null || true)"
+  if [[ -z "$tool_root" || "$(cd "$tool_root" && pwd -P)" != "$(cd "$TOOL_DIR" && pwd -P)" ]]; then
     echo "ERROR: Map Starter Kit submodule is not initialized." >&2
     echo "Run: make wa-init" >&2
     exit 1
