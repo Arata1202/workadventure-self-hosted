@@ -517,8 +517,6 @@ services:
 
   presence:
     image: ghcr.io/arata1202/workadventure-presence-notifier:0.2.0
-    build:
-      context: https://github.com/Arata1202/workadventure-presence-notifier.git#338a401ff595c21e02583296e78dcc88b84993ed
     stop_grace_period: 20s
     environment:
       - SLACK_BOT_TOKEN

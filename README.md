@@ -312,6 +312,9 @@ make decrypt
 vi .env
 make encrypt
 
+# Pull the pinned public notifier image
+npx dotenvx run -- docker compose pull presence
+
 # Publish one current status and leave it in Slack for validation
 npx dotenvx run -- docker compose run --rm presence \
   --config /etc/presence/config.yaml \
