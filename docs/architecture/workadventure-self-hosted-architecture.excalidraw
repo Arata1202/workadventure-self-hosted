@@ -398,6 +398,58 @@
       "elbowed": false
     },
     {
+      "id": "a-presence-state",
+      "type": "arrow",
+      "x": 1210,
+      "y": 385,
+      "width": 0,
+      "height": 70,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "index": "a-presence-state",
+      "roundness": null,
+      "seed": 614209,
+      "version": 1,
+      "versionNonce": 803417,
+      "isDeleted": false,
+      "boundElements": null,
+      "updated": 1792662896556,
+      "link": null,
+      "locked": false,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          70
+        ]
+      ],
+      "lastCommittedPoint": null,
+      "startBinding": {
+        "elementId": "presence",
+        "focus": 0,
+        "gap": 1
+      },
+      "endBinding": {
+        "elementId": "presence-state",
+        "focus": 0,
+        "gap": 1
+      },
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "elbowed": false
+    },
+    {
       "id": "a-actions",
       "type": "arrow",
       "x": 180,
@@ -838,6 +890,14 @@
         {
           "id": "presence-text",
           "type": "text"
+        },
+        {
+          "id": "a-slack",
+          "type": "arrow"
+        },
+        {
+          "id": "a-presence-state",
+          "type": "arrow"
         }
       ],
       "updated": 1792311600000,
@@ -882,6 +942,82 @@
       "lineHeight": 1.2
     },
     {
+      "id": "presence-state",
+      "type": "rectangle",
+      "x": 1130,
+      "y": 455,
+      "width": 160,
+      "height": 70,
+      "angle": 0,
+      "strokeColor": "#868e96",
+      "backgroundColor": "#e9ecef",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "index": "presence-state",
+      "roundness": {
+        "type": 3
+      },
+      "seed": 928314,
+      "version": 1,
+      "versionNonce": 428951,
+      "isDeleted": false,
+      "boundElements": [
+        {
+          "id": "presence-state-text",
+          "type": "text"
+        },
+        {
+          "id": "a-presence-state",
+          "type": "arrow"
+        }
+      ],
+      "updated": 1792662896556,
+      "link": null,
+      "locked": false
+    },
+    {
+      "id": "presence-state-text",
+      "type": "text",
+      "x": 1148,
+      "y": 470,
+      "width": 124,
+      "height": 40,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "index": "presence-state-text",
+      "roundness": null,
+      "seed": 504833,
+      "version": 1,
+      "versionNonce": 721604,
+      "isDeleted": false,
+      "boundElements": null,
+      "updated": 1792662896556,
+      "link": null,
+      "locked": false,
+      "text": "Private state\nvolume",
+      "originalText": "Private state\nvolume",
+      "fontSize": 15,
+      "fontFamily": 1,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "presence-state",
+      "autoResize": true,
+      "lineHeight": 1.2
+    },
+    {
       "id": "slack",
       "type": "rectangle",
       "x": 1450,
@@ -910,6 +1046,10 @@
         {
           "id": "slack-text",
           "type": "text"
+        },
+        {
+          "id": "a-slack",
+          "type": "arrow"
         }
       ],
       "updated": 1792311600000,
@@ -1084,15 +1224,15 @@
       "index": "l-slack",
       "roundness": null,
       "seed": 681780,
-      "version": 1,
+      "version": 2,
       "versionNonce": 855522,
       "isDeleted": false,
       "boundElements": null,
-      "updated": 1792311600000,
+      "updated": 1792662896556,
       "link": null,
       "locked": false,
-      "text": "HTTPS\nwebhook",
-      "originalText": "HTTPS\nwebhook",
+      "text": "HTTPS\nBot API",
+      "originalText": "HTTPS\nBot API",
       "fontSize": 13,
       "fontFamily": 1,
       "textAlign": "center",

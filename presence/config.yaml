@@ -5,11 +5,14 @@ workadventure:
   initial_sync_timeout: "2s"
   request_timeout: "10s"
 
-notification:
-  interval: "30m"
+status:
+  debounce: "5s"
+  shutdown_timeout: "10s"
+  state_file: "/var/lib/workadventure-presence-notifier/state.json"
 
-notifiers:
+destination:
   slack:
+    channel_id: "C0AAX0RKQHY"
     message: "Currently online ({{ .Count }}): {{ .Users }}"
-    empty_message: "No users are currently online."
     user_separator: ", "
+    request_timeout: "10s"
