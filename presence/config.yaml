@@ -1,5 +1,6 @@
 workadventure:
   address: "back:50051"
+  entrance_label: "Open WorkAdventure"
   room_discovery_interval: "30s"
   reconnect_interval: "5s"
   initial_sync_timeout: "2s"
@@ -12,7 +13,7 @@ status:
 
 destination:
   slack:
-    channel_id: "C0AAX0RKQHY"
+    interactions_listen: "0.0.0.0:8080"
     message: "Currently online ({{ .Count }}): {{ .Users }}"
     user_separator: ", "
     request_timeout: "10s"
