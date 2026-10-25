@@ -1,6 +1,6 @@
 workadventure:
   address: "back:50051"
-  entrance_url: "https://workadventure.localhost/~/maps/office.wam"
+  entrance_url: "https://workadventure.realunivlog.com"
   entrance_label: "Open WorkAdventure"
   room_discovery_interval: "30s"
   reconnect_interval: "5s"
