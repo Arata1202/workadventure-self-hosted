@@ -308,13 +308,13 @@ SSH_PRIVATE_KEY=<SSH_PRIVATE_KEY>
 
 The [WorkAdventure Presence Notifier](https://github.com/Arata1202/workadventure-presence-notifier) maintains one event-driven Slack status showing the users who are currently online. The `presence` service connects to the internal `back:50051` gRPC endpoint and does not expose an additional host port.
 
-Complete the notifier's [Slack app setup](https://github.com/Arata1202/workadventure-presence-notifier#slack-app-setup) first. This deployment forwards `SLACK_BOT_TOKEN` and `SLACK_SIGNING_SECRET` from the encrypted `.env` file and sets the target channel in `presence/config.yaml`.
+Complete the notifier's [Slack app setup](https://github.com/Arata1202/workadventure-presence-notifier#slack-app-setup) first. This deployment forwards `SLACK_BOT_TOKEN`, `SLACK_SIGNING_SECRET`, `SLACK_CHANNEL_ID`, and `WORKADVENTURE_ENTRANCE_URL` from the encrypted `.env` file. Keep the deployment-specific channel ID and entrance URL there rather than in tracked YAML. Nonempty values override the corresponding YAML fields; empty or unset values fall back to YAML, with the same validation and signing-secret requirement.
 
-This verification configuration builds the unreleased entrance-button feature from [notifier PR #6](https://github.com/Arata1202/workadventure-presence-notifier/pull/6), pinned to `420133a62db019a89a7a8c17344eb689d6155263`. The published `0.2.0` image does not support it. Build from source until that PR is merged and a release containing it is published, then replace the temporary local image/build with that release image.
+This verification configuration builds the unreleased entrance-button feature from [notifier PR #6](https://github.com/Arata1202/workadventure-presence-notifier/pull/6), pinned to `fd3bd0a2d959d9faa2555aec2a7ca0ffbba8b859`. The published `0.2.0` image does not support it. Build from source until that PR is merged and a release containing it is published, then replace the temporary local image/build with that release image.
 
 Before starting the verification deployment:
 
-1. Set `workadventure.entrance_url` in `presence/config.yaml` to the deployment-specific absolute office entrance URL. Replace the configured value with the intended office entrance route; YAML does not expand `${DOMAIN}`. Set `entrance_label` to customize the bottom button.
+1. Set `SLACK_CHANNEL_ID` and the optional `WORKADVENTURE_ENTRANCE_URL` in the encrypted `.env`. Use the absolute office entrance URL; YAML does not expand `${DOMAIN}`. Set `workadventure.entrance_label` in `presence/config.yaml` to customize the bottom button.
 2. Add the Slack app's Signing Secret from **Basic Information** to the encrypted `.env` as `SLACK_SIGNING_SECRET`. It is required only while `entrance_url` is set; it is not a bot token or App-Level Token.
 3. In the same Slack app's **Socket Mode** settings, turn **Enable Socket Mode** off for HTTP delivery. If another integration uses Socket Mode on this app, coordinate the switch or use a separate Slack app. Then enable **Interactivity** in **Interactivity & Shortcuts** and set its Request URL to `https://<YOUR_FQDN>/slack/interactions`.
 
@@ -326,7 +326,7 @@ The exact-path TLS router forwards only `/slack/interactions` to `presence:8080`
 # Move to repository
 cd workadventure-self-hosted
 
-# Edit and encrypt the Slack credentials
+# Edit and encrypt the Slack credentials, channel ID, and entrance URL
 make decrypt
 vi .env
 make encrypt
@@ -345,11 +345,13 @@ make logs P=presence
 # Required and secret
 SLACK_BOT_TOKEN=<SLACK_BOT_USER_OAUTH_TOKEN>
 SLACK_SIGNING_SECRET=<SLACK_APP_SIGNING_SECRET>
+SLACK_CHANNEL_ID=<SLACK_CHANNEL_ID>
+WORKADVENTURE_ENTRANCE_URL=https://office.example.invalid/entrance
 ```
 
 Verify the status layout, a real button click, signed acknowledgement through public HTTPS, and office login in the target deployment. Compose/configuration checks alone do not validate Slack or public routing. The pinned feature uses daemon mode only; `--once` is no longer supported.
 
-Normal daemon mode publishes a synchronized non-empty status after startup, debounces presence changes for five seconds, and deletes its status when the office becomes empty or the daemon shuts down cleanly. Edit `presence/config.yaml` to change the debounce, destination, or message template.
+Normal daemon mode publishes a synchronized non-empty status after startup, debounces presence changes for five seconds, and deletes its status when the office becomes empty or the daemon shuts down cleanly. Edit `presence/config.yaml` to change the debounce or message template; change the destination through `SLACK_CHANNEL_ID` in the encrypted `.env`.
 
 > [!NOTE]
 > The notifier sends WorkAdventure display names to the configured Slack workspace and stores only Slack message references in the private `presence-state` volume. It does not store presence history, IP addresses, coordinates, authentication claims, or tokens. Restrict access to the Slack channel and do not expose the internal gRPC port publicly.

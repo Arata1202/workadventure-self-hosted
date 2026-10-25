@@ -1,6 +1,5 @@
 workadventure:
   address: "back:50051"
-  entrance_url: "https://workadventure.realunivlog.com"
   entrance_label: "Open WorkAdventure"
   room_discovery_interval: "30s"
   reconnect_interval: "5s"
@@ -15,7 +14,6 @@ status:
 destination:
   slack:
     interactions_listen: "0.0.0.0:8080"
-    channel_id: "C0AAX0RKQHY"
     message: "Currently online ({{ .Count }}): {{ .Users }}"
     user_separator: ", "
     request_timeout: "10s"
