@@ -516,9 +516,7 @@ services:
     restart: ${RESTART_POLICY}
 
   presence:
-    image: workadventure-presence-notifier:entrance-fd3bd0a
-    build:
-      context: https://github.com/Arata1202/workadventure-presence-notifier.git#fd3bd0a2d959d9faa2555aec2a7ca0ffbba8b859
+    image: ghcr.io/arata1202/workadventure-presence-notifier:0.3.0
     stop_grace_period: 20s
     environment:
       - SLACK_BOT_TOKEN

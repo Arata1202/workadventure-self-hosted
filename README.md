@@ -310,9 +310,9 @@ The [WorkAdventure Presence Notifier](https://github.com/Arata1202/workadventure
 
 Complete the notifier's [Slack app setup](https://github.com/Arata1202/workadventure-presence-notifier#slack-app-setup) first. This deployment forwards `SLACK_BOT_TOKEN`, `SLACK_SIGNING_SECRET`, `SLACK_CHANNEL_ID`, and `WORKADVENTURE_ENTRANCE_URL` from the encrypted `.env` file. Keep the deployment-specific channel ID and entrance URL there rather than in tracked YAML. Nonempty values override the corresponding YAML fields; empty or unset values fall back to YAML, with the same validation and signing-secret requirement.
 
-This verification configuration builds the unreleased entrance-button feature from [notifier PR #6](https://github.com/Arata1202/workadventure-presence-notifier/pull/6), pinned to `fd3bd0a2d959d9faa2555aec2a7ca0ffbba8b859`. The published `0.2.0` image does not support it. Build from source until that PR is merged and a release containing it is published, then replace the temporary local image/build with that release image.
+The `presence` service uses the published `ghcr.io/arata1202/workadventure-presence-notifier:0.3.0` image.
 
-Before starting the verification deployment:
+Before starting the notifier:
 
 1. Set `SLACK_CHANNEL_ID` and the optional `WORKADVENTURE_ENTRANCE_URL` in the encrypted `.env`. Use the absolute office entrance URL; YAML does not expand `${DOMAIN}`. Set `workadventure.entrance_label` in `presence/config.yaml` to customize the bottom button.
 2. Add the Slack app's Signing Secret from **Basic Information** to the encrypted `.env` as `SLACK_SIGNING_SECRET`. It is required only while `entrance_url` is set; it is not a bot token or App-Level Token.
@@ -331,8 +331,8 @@ make decrypt
 vi .env
 make encrypt
 
-# Build the pinned verification source
-npx dotenvx run -- docker compose build presence
+# Pull the released notifier image
+npx dotenvx run -- docker compose pull presence
 
 # Start or recreate only the notifier daemon
 npx dotenvx run -- docker compose up -d --no-deps --force-recreate presence
@@ -342,14 +342,15 @@ make logs P=presence
 ```
 
 ```env
-# Required and secret
+# Required
 SLACK_BOT_TOKEN=<SLACK_BOT_USER_OAUTH_TOKEN>
-SLACK_SIGNING_SECRET=<SLACK_APP_SIGNING_SECRET>
 SLACK_CHANNEL_ID=<SLACK_CHANNEL_ID>
+# Optional entrance button; requires the signing secret
 WORKADVENTURE_ENTRANCE_URL=https://office.example.invalid/entrance
+SLACK_SIGNING_SECRET=<SLACK_APP_SIGNING_SECRET>
 ```
 
-Verify the status layout, a real button click, signed acknowledgement through public HTTPS, and office login in the target deployment. Compose/configuration checks alone do not validate Slack or public routing. The pinned feature uses daemon mode only; `--once` is no longer supported.
+Verify the status layout, a real button click, signed acknowledgement through public HTTPS, and office login in the target deployment. Compose/configuration checks alone do not validate Slack or public routing. Version 0.3.0 uses daemon mode only; `--once` is no longer supported.
 
 Normal daemon mode publishes a synchronized non-empty status after startup, debounces presence changes for five seconds, and deletes its status when the office becomes empty or the daemon shuts down cleanly. Edit `presence/config.yaml` to change the debounce or message template; change the destination through `SLACK_CHANNEL_ID` in the encrypted `.env`.
 
