@@ -1,5 +1,7 @@
 workadventure:
   address: "back:50051"
+  entrance_url: "https://workadventure.localhost/~/maps/office.wam"
+  entrance_label: "Open WorkAdventure"
   room_discovery_interval: "30s"
   reconnect_interval: "5s"
   initial_sync_timeout: "2s"
@@ -12,6 +14,7 @@ status:
 
 destination:
   slack:
+    interactions_listen: "0.0.0.0:8080"
     channel_id: "C0AAX0RKQHY"
     message: "Currently online ({{ .Count }}): {{ .Users }}"
     user_separator: ", "

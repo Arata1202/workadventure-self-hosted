@@ -516,16 +516,27 @@ services:
     restart: ${RESTART_POLICY}
 
   presence:
-    image: ghcr.io/arata1202/workadventure-presence-notifier:0.2.0
+    image: workadventure-presence-notifier:entrance-420133a
+    build:
+      context: https://github.com/Arata1202/workadventure-presence-notifier.git#420133a62db019a89a7a8c17344eb689d6155263
     stop_grace_period: 20s
     environment:
       - SLACK_BOT_TOKEN
+      - SLACK_SIGNING_SECRET=${SLACK_SIGNING_SECRET:-}
     volumes:
       - ./presence/config.yaml:/etc/presence/config.yaml:ro
       - presence-state:/var/lib/workadventure-presence-notifier
     command:
       - --config
       - /etc/presence/config.yaml
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.presence-slack-ssl.rule: "Host(`${DOMAIN}`) && Path(`/slack/interactions`)"
+      traefik.http.routers.presence-slack-ssl.entryPoints: "websecure"
+      traefik.http.routers.presence-slack-ssl.tls: "true"
+      traefik.http.routers.presence-slack-ssl.tls.certresolver: "myresolver"
+      traefik.http.routers.presence-slack-ssl.service: "presence-slack"
+      traefik.http.services.presence-slack.loadbalancer.server.port: "8080"
     depends_on:
       back:
         condition: service_started
