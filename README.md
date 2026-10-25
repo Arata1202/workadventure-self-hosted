@@ -314,9 +314,9 @@ This verification configuration builds the unreleased entrance-button feature fr
 
 Before starting the verification deployment:
 
-1. Set `workadventure.entrance_url` in `presence/config.yaml` to `https://<YOUR_FQDN>/~/maps/office.wam`, matching the uploaded office entry route above. The tracked hostname is a local example; YAML does not expand `${DOMAIN}`. Set `entrance_label` to customize the bottom button.
+1. Set `workadventure.entrance_url` in `presence/config.yaml` to the deployment-specific absolute office entrance URL. Replace the configured value with the intended office entrance route; YAML does not expand `${DOMAIN}`. Set `entrance_label` to customize the bottom button.
 2. Add the Slack app's Signing Secret from **Basic Information** to the encrypted `.env` as `SLACK_SIGNING_SECRET`. It is required only while `entrance_url` is set; it is not a bot token or App-Level Token.
-3. Enable **Interactivity** in the same Slack app's **Interactivity & Shortcuts** and set its Request URL to `https://<YOUR_FQDN>/slack/interactions`.
+3. In the same Slack app's **Socket Mode** settings, turn **Enable Socket Mode** off for HTTP delivery. If another integration uses Socket Mode on this app, coordinate the switch or use a separate Slack app. Then enable **Interactivity** in **Interactivity & Shortcuts** and set its Request URL to `https://<YOUR_FQDN>/slack/interactions`.
 
 The exact-path TLS router forwards only `/slack/interactions` to `presence:8080` on the shared default Docker network. The listener binds inside the container without publishing a host port. This callback must be reachable without interactive login/SSO; it authenticates Slack signatures instead. WorkAdventure's other routes and office authentication remain unchanged. Keep proxy body/header logging disabled for interaction requests.
 
