@@ -8,7 +8,7 @@ sudo apt install -y ca-certificates curl gnupg make build-essential libpng-dev p
 sudo install -m 0755 -d /etc/apt/keyrings
 
 # Node.js
-curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+curl -fsSL https://deb.nodesource.com/setup_24.x | sudo -E bash -
 sudo apt install -y nodejs
 
 # Docker
