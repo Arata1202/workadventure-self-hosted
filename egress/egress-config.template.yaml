@@ -1,3 +1,5 @@
+api_key: ${LIVEKIT_API_KEY}
+api_secret: ${LIVEKIT_API_SECRET}
 ws_url: "ws://livekit:7880"
 log_level: "debug"
 insecure: true

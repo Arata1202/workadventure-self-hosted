@@ -452,6 +452,8 @@ MAX_PER_GROUP=<NUMBER>
 | ------------------- | ---- | ------------------------ | --- |
 | livekit.<YOUR_FQDN> | A    | <VM_PUBLIC_IPV4_ADDRESS> | 300 |
 
+LiveKit and Egress read their credentials from the standard YAML fields. Each service renders its configuration at startup into a private file on a container-local tmpfs.
+
 After upgrading an existing Egress deployment, check whether the previous setup left its generated credential file at `/tmp/egress-config.yaml` on the VM. Confirm its ownership and origin before removing it. Rotate the LiveKit credentials if other users could read the file.
 
 ### Set Up Coturn
