@@ -1,7 +1,21 @@
-if git diff --cached --name-only | grep -q '^\.env$'; then
-  npx dotenvx encrypt || exit 1
+set -eu
+if git diff --cached --quiet --diff-filter=ACMRT -- .env; then
+  exit 0
+else
+  status=$?
+  [ "$status" -eq 1 ] || exit "$status"
+fi
 
-  git diff --exit-code .env || {
-    exit 1
-  }
+umask 077
+snapshot=$(mktemp -d)
+trap 'rm -rf -- "$snapshot"' EXIT
+git show :.env > "$snapshot/.env"
+cp "$snapshot/.env" "$snapshot/staged"
+if ! ./scripts/dotenvx.sh encrypt -f "$snapshot/.env" >/dev/null 2>&1; then
+  echo 'Cannot validate the staged .env. Check the file and run npm ci if dotenvx is missing.' >&2
+  exit 1
+fi
+if ! cmp -s "$snapshot/staged" "$snapshot/.env"; then
+  echo 'The staged .env contains unencrypted changes. Encrypt and stage the intended values.' >&2
+  exit 1
 fi

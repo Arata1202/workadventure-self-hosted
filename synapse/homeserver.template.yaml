@@ -19,7 +19,7 @@ database:
     cp_min: 5
     cp_max: 10
 
-log_config: "/data/log.config.yaml"
+log_config: "/log.config.yaml"
 media_store_path: /data/media_store
 registration_shared_secret: "${MATRIX_REGISTRATION_SHARED_SECRET}"
 report_stats: false
@@ -41,7 +41,7 @@ oidc_providers:
 
     user_mapping_provider:
       config:
-        localpart_template: "{{ user['${OPENID_USERNAME_CLAIM}'].split('@')[0] }}"
+        localpart_template: "{{ user[${OPENID_USERNAME_CLAIM}].split('@')[0] }}"
         display_name_template: "{{ user.name }}"
 
 sso:

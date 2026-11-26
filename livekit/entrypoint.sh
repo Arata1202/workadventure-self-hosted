@@ -1,16 +1,21 @@
 #!/bin/sh
 
 set -eu
-
 : "${LIVEKIT_API_KEY:?Error: LIVEKIT_API_KEY is not set}"
 : "${LIVEKIT_API_SECRET:?Error: LIVEKIT_API_SECRET is not set}"
 
-if [ ! -f /tmp/livekit-config.yaml ] || [ /etc/livekit/livekit-config.template.yaml -nt /tmp/livekit-config.yaml ]; then
-  echo "Generating livekit-config.yaml from livekit-config.template.yaml..."
-  sed \
-    -e "s|\${LIVEKIT_API_KEY}|$LIVEKIT_API_KEY|g" \
-    -e "s|\${LIVEKIT_API_SECRET}|$LIVEKIT_API_SECRET|g" \
-    /etc/livekit/livekit-config.template.yaml > /tmp/livekit-config.yaml
-fi
-
-exec /livekit-server --config /tmp/livekit-config.yaml
+# LIVEKIT_KEYS accepts a YAML mapping. Quote single-line credentials as strings,
+# including numeric-looking values, punctuation and literal apostrophes.
+LIVEKIT_KEYS=$(LC_ALL=C awk '
+    function quote(value) {
+        if (value ~ /[[:cntrl:]]/) {
+            print "LiveKit credentials must be single-line printable strings" > "/dev/stderr"
+            exit 1
+        }
+        gsub(/\047/, "\047\047", value)
+        return "\047" value "\047"
+    }
+    BEGIN { print quote(ENVIRON["LIVEKIT_API_KEY"]) ": " quote(ENVIRON["LIVEKIT_API_SECRET"]) }
+')
+export LIVEKIT_KEYS
+exec /livekit-server --config /etc/livekit/livekit-config.yaml

@@ -3,21 +3,49 @@ name: deploy
 on:
   workflow_dispatch:
 
-permissions:
-  contents: read
+concurrency:
+  group: deploy-vm
+  cancel-in-progress: false
+
+permissions: {}
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: ssh and deploy
-        uses: appleboy/ssh-action@v1.2.0
+      - name: Check deployment prerequisites
+        env:
+          SSH_HOST_FINGERPRINT: ${{ secrets.SSH_HOST_FINGERPRINT }}
+        run: |
+          if [ "$GITHUB_REF" != refs/heads/master ]; then
+            echo "::error::Dispatch this workflow from master"
+            exit 1
+          fi
+          : "${SSH_HOST_FINGERPRINT:?Set the trusted SSH_HOST_FINGERPRINT secret}"
+
+      - name: Deploy selected revision
+        uses: appleboy/ssh-action@7eaf76671a0d7eec5d98ee897acda4f968735a17 # v1.2.0
+        env:
+          DEPLOY_SHA: ${{ github.sha }}
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script_stop: true
+          fingerprint: ${{ secrets.SSH_HOST_FINGERPRINT }}
+          envs: DEPLOY_SHA
           script: |
+            set -eu
             cd ~/WorkAdventure
-            git pull --ff-only
-            yes y | make up-f
+            if [ "$(git symbolic-ref --short HEAD)" != master ]; then
+              echo "The VM checkout must be on master" >&2
+              exit 1
+            fi
+            if ! git diff --quiet HEAD --ignore-submodules=none --; then
+              echo "Commit or back up tracked changes on the VM before deploying" >&2
+              exit 1
+            fi
+            git fetch origin refs/heads/master
+            git merge-base --is-ancestor "$DEPLOY_SHA" FETCH_HEAD
+            git merge-base --is-ancestor HEAD "$DEPLOY_SHA"
+            git merge --ff-only "$DEPLOY_SHA"
+            printf 'y\n' | make up-f

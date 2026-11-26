@@ -319,7 +319,7 @@ services:
       - "traefik.http.services.livekit.loadbalancer.server.port=7880"
     volumes:
       - ./livekit/entrypoint.sh:/entrypoint.sh:ro
-      - ./livekit/livekit-config.template.yaml:/etc/livekit/livekit-config.template.yaml:ro
+      - ./livekit/livekit-config.yaml:/etc/livekit/livekit-config.yaml:ro
     depends_on:
       redis:
         condition: service_started
@@ -327,7 +327,7 @@ services:
 
   egress:
     image: livekit/egress:v1.15.0
-    entrypoint: ["/entrypoint.sh"]
+    entrypoint: ["/egress-preflight.sh"]
     cap_add:
       - SYS_ADMIN
     privileged: true
@@ -337,11 +337,12 @@ services:
     environment:
       LIVEKIT_API_KEY:
       LIVEKIT_API_SECRET:
+      EGRESS_CONFIG_FILE: /etc/egress/egress-config.yaml
       DISABLE_CUDA: "true"
       DISABLE_NVENC: "true"
     volumes:
-      - ./egress/entrypoint.sh:/entrypoint.sh:ro
-      - ./egress/egress-config.template.yaml:/etc/egress/egress-config.template.yaml:ro
+      - ./egress/entrypoint.sh:/egress-preflight.sh:ro
+      - ./egress/egress-config.yaml:/etc/egress/egress-config.yaml:ro
       - /tmp:/tmp:rw
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8081/health"]
@@ -439,7 +440,7 @@ services:
 
   synapse:
     image: matrixdotorg/synapse:v1.140.0
-    entrypoint: ["/entrypoint.sh"]
+    entrypoint: ["/entrypoint.py"]
     environment:
       DOMAIN: "${DOMAIN}"
       MATRIX_REGISTRATION_SHARED_SECRET: "${MATRIX_REGISTRATION_SHARED_SECRET}"
@@ -466,7 +467,7 @@ services:
       traefik.http.routers.matrix-ssl.service: "matrix"
     volumes:
       - synapse-data:/data
-      - ./synapse/entrypoint.sh:/entrypoint.sh:ro
+      - ./synapse/entrypoint.py:/entrypoint.py:ro
       - ./synapse/homeserver.template.yaml:/homeserver.template.yaml:ro
       - ./synapse/log.config.yaml:/log.config.yaml:ro
     depends_on:

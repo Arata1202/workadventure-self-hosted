@@ -3,6 +3,10 @@ name: Upload WA maps
 on:
   workflow_dispatch:
 
+concurrency:
+  group: upload-wa-maps
+  cancel-in-progress: false
+
 permissions:
   contents: write
   pages: write
@@ -13,10 +17,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Validate upload mode
+        id: destination
+        env:
+          UPLOAD_MODE: ${{ secrets.UPLOAD_MODE }}
+        run: |
+          case "$UPLOAD_MODE" in
+            MAP_STORAGE) echo "publish_pages=false" >> "$GITHUB_OUTPUT" ;;
+            GH_PAGES) echo "publish_pages=true" >> "$GITHUB_OUTPUT" ;;
+            *) echo "::error::UPLOAD_MODE must be MAP_STORAGE or GH_PAGES"; exit 1 ;;
+          esac
+
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
           submodules: recursive
+          persist-credentials: false
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -37,52 +53,24 @@ jobs:
         run: npm run buildmap
         working-directory: tools/map-starter-kit
 
-      - name: Extract UPLOAD_MODE from Environment Variables
+      - name: Deploy using WA Map Storage
+        if: steps.destination.outputs.publish_pages == 'false'
+        working-directory: tools/map-starter-kit
         env:
-          UPLOAD_MODE_SECRET: ${{ secrets.UPLOAD_MODE }}
-        run: |
-          if [ -z "$UPLOAD_MODE_SECRET" ]; then
-            echo "Error: UPLOAD_MODE is not set in GitHub Secrets."
-            exit 1
-          fi
-          echo "UPLOAD_MODE=$UPLOAD_MODE_SECRET" >> "$GITHUB_ENV"
-
-      - name: Set up Environment Variables
-        env:
-          MAP_STORAGE_API_KEY_SECRET: ${{ secrets.MAP_STORAGE_API_KEY }}
-          MAP_STORAGE_URL_SECRET: ${{ secrets.MAP_STORAGE_URL }}
-          UPLOAD_DIRECTORY_SECRET: ${{ secrets.UPLOAD_DIRECTORY }}
+          UPLOAD_MODE: MAP_STORAGE
+          MAP_STORAGE_API_KEY: ${{ secrets.MAP_STORAGE_API_KEY }}
+          MAP_STORAGE_URL: ${{ secrets.MAP_STORAGE_URL }}
+          UPLOAD_DIRECTORY: ${{ secrets.UPLOAD_DIRECTORY }}
           REPOSITORY_NAME: ${{ github.event.repository.name }}
         run: |
-          if [ "$UPLOAD_MODE" = "MAP_STORAGE" ]; then
-            if [ -z "$MAP_STORAGE_API_KEY_SECRET" ]; then
-              echo "Error: MAP_STORAGE_API_KEY is not set in GitHub Secrets."
-              exit 1
-            fi
-            if [ -z "$MAP_STORAGE_URL_SECRET" ]; then
-              echo "Error: MAP_STORAGE_URL is not set in GitHub Secrets."
-              exit 1
-            fi
-            echo "MAP_STORAGE_API_KEY=$MAP_STORAGE_API_KEY_SECRET" >> "$GITHUB_ENV"
-            echo "MAP_STORAGE_URL=$MAP_STORAGE_URL_SECRET" >> "$GITHUB_ENV"
+          : "${MAP_STORAGE_API_KEY:?Set the MAP_STORAGE_API_KEY secret}"
+          : "${MAP_STORAGE_URL:?Set the MAP_STORAGE_URL secret}"
+          export UPLOAD_DIRECTORY="${UPLOAD_DIRECTORY:-${GITHUB_REPOSITORY_OWNER}-${REPOSITORY_NAME}}"
+          npm run upload-only
 
-            if [ -n "$UPLOAD_DIRECTORY_SECRET" ]; then
-              echo "UPLOAD_DIRECTORY=$UPLOAD_DIRECTORY_SECRET" >> "$GITHUB_ENV"
-            else
-              UPLOAD_DIRECTORY="${GITHUB_REPOSITORY_OWNER}-${REPOSITORY_NAME}"
-              echo "UPLOAD_DIRECTORY=$UPLOAD_DIRECTORY" >> "$GITHUB_ENV"
-              echo "Warning: UPLOAD_DIRECTORY was not found; set to $UPLOAD_DIRECTORY."
-            fi
-          fi
-
-      - name: Deploy using WA Map Storage
-        if: ${{ env.UPLOAD_MODE == 'MAP_STORAGE' }}
-        run: npm run upload-only
-        working-directory: tools/map-starter-kit
-
-      - name: Deploy using Github Pages
-        if: ${{ env.UPLOAD_MODE == 'GH_PAGES' }}
-        uses: JamesIves/github-pages-deploy-action@v4.9.0
+      - name: Deploy using GitHub Pages
+        if: steps.destination.outputs.publish_pages == 'true'
+        uses: JamesIves/github-pages-deploy-action@fa24774553152dd7873cd16ebd8d959b010c5445 # v4.9.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: gh-pages
