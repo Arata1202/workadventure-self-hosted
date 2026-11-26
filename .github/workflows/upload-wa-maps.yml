@@ -18,13 +18,11 @@ jobs:
 
     steps:
       - name: Validate upload mode
-        id: destination
         env:
           UPLOAD_MODE: ${{ secrets.UPLOAD_MODE }}
         run: |
           case "$UPLOAD_MODE" in
-            MAP_STORAGE) echo "publish_pages=false" >> "$GITHUB_OUTPUT" ;;
-            GH_PAGES) echo "publish_pages=true" >> "$GITHUB_OUTPUT" ;;
+            MAP_STORAGE|GH_PAGES) echo "UPLOAD_MODE=$UPLOAD_MODE" >> "$GITHUB_ENV" ;;
             *) echo "::error::UPLOAD_MODE must be MAP_STORAGE or GH_PAGES"; exit 1 ;;
           esac
 
@@ -54,10 +52,9 @@ jobs:
         working-directory: tools/map-starter-kit
 
       - name: Deploy using WA Map Storage
-        if: steps.destination.outputs.publish_pages == 'false'
+        if: ${{ env.UPLOAD_MODE == 'MAP_STORAGE' }}
         working-directory: tools/map-starter-kit
         env:
-          UPLOAD_MODE: MAP_STORAGE
           MAP_STORAGE_API_KEY: ${{ secrets.MAP_STORAGE_API_KEY }}
           MAP_STORAGE_URL: ${{ secrets.MAP_STORAGE_URL }}
           UPLOAD_DIRECTORY: ${{ secrets.UPLOAD_DIRECTORY }}
@@ -68,8 +65,8 @@ jobs:
           export UPLOAD_DIRECTORY="${UPLOAD_DIRECTORY:-${GITHUB_REPOSITORY_OWNER}-${REPOSITORY_NAME}}"
           npm run upload-only
 
-      - name: Deploy using GitHub Pages
-        if: steps.destination.outputs.publish_pages == 'true'
+      - name: Deploy using Github Pages
+        if: ${{ env.UPLOAD_MODE == 'GH_PAGES' }}
         uses: JamesIves/github-pages-deploy-action@fa24774553152dd7873cd16ebd8d959b010c5445 # v4.9.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
