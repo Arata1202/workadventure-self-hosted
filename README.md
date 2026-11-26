@@ -310,7 +310,7 @@ The [WorkAdventure Presence Notifier](https://github.com/Arata1202/workadventure
 
 Complete the notifier's [Slack app setup](https://github.com/Arata1202/workadventure-presence-notifier#slack-app-setup) first. This deployment forwards `SLACK_BOT_TOKEN`, `SLACK_SIGNING_SECRET`, `SLACK_CHANNEL_ID`, and `WORKADVENTURE_ENTRANCE_URL` from the encrypted `.env` file. Keep the deployment-specific channel ID and entrance URL there rather than in tracked YAML. Nonempty values override the corresponding YAML fields; empty or unset values fall back to YAML, with the same validation and signing-secret requirement.
 
-The `presence` service uses the published `ghcr.io/arata1202/workadventure-presence-notifier:0.3.0` image.
+The `presence` service uses the published `ghcr.io/arata1202/workadventure-presence-notifier:1.0.0` image.
 
 Before starting the notifier:
 
@@ -350,7 +350,7 @@ WORKADVENTURE_ENTRANCE_URL=https://office.example.invalid/entrance
 SLACK_SIGNING_SECRET=<SLACK_APP_SIGNING_SECRET>
 ```
 
-Verify the status layout, a real button click, signed acknowledgement through public HTTPS, and office login in the target deployment. Compose/configuration checks alone do not validate Slack or public routing. Version 0.3.0 uses daemon mode only; `--once` is no longer supported.
+Verify the status layout, a real button click, signed acknowledgement through public HTTPS, and office login in the target deployment. Compose/configuration checks alone do not validate Slack or public routing. The notifier runs in daemon mode only; `--once` is no longer supported.
 
 Normal daemon mode publishes a synchronized non-empty status after startup, debounces presence changes for five seconds, and deletes its status when the office becomes empty or the daemon shuts down cleanly. Edit `presence/config.yaml` to change the debounce or message template; change the destination through `SLACK_CHANNEL_ID` in the encrypted `.env`.
 
