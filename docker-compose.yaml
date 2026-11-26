@@ -487,7 +487,7 @@ services:
     restart: ${RESTART_POLICY}
 
   presence:
-    image: ghcr.io/arata1202/workadventure-presence-notifier:0.3.0
+    image: ghcr.io/arata1202/workadventure-presence-notifier:1.0.0
     stop_grace_period: 20s
     environment:
       - SLACK_BOT_TOKEN
