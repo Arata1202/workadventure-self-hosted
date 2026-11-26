@@ -132,8 +132,11 @@ ssh workadventure
 git clone https://github.com/Arata1202/workadventure-self-hosted.git
 cd workadventure-self-hosted
 
-# Set up Ubuntu
-./ubuntu/setup.sh
+# Set up Ubuntu and grant the selected account Docker access (root-equivalent).
+# Omit the username to install without changing group membership.
+./ubuntu/setup.sh ubuntu
+
+# Reconnect as ubuntu before running Docker commands.
 
 # Install dependencies
 make wa-init
@@ -300,9 +303,12 @@ UPLOAD_DIRECTORY=maps
 SSH_HOST=<VM_PUBLIC_IPV4_ADDRESS>
 SSH_USERNAME=ubuntu
 SSH_PRIVATE_KEY=<SSH_PRIVATE_KEY>
+SSH_HOST_FINGERPRINT=SHA256:<VM_SSH_HOST_KEY_FINGERPRINT>
 ```
 
-3. Run the `deploy` workflow manually from GitHub Actions to apply repository changes to the VM
+Obtain the SSH host-key fingerprint from a trusted VM console or an existing verified connection. For example, run `ssh-keygen -E sha256 -lf /etc/ssh/ssh_host_ed25519_key.pub` for an Ed25519 host key and copy the `SHA256:…` field.
+
+3. Dispatch the `deploy` workflow from `master`. It fast-forwards `~/WorkAdventure` on the VM to the selected commit. The checkout must be on `master`, have no staged or unstaged tracked edits, and be able to fast-forward to that revision.
 
 ### Set Up Presence Notifications
 
@@ -445,6 +451,10 @@ MAX_PER_GROUP=<NUMBER>
 | Record Name         | Type | Value                    | TTL |
 | ------------------- | ---- | ------------------------ | --- |
 | livekit.<YOUR_FQDN> | A    | <VM_PUBLIC_IPV4_ADDRESS> | 300 |
+
+LiveKit and Egress read their credentials from the standard YAML fields. Each service renders its configuration at startup into a private file on a container-local tmpfs.
+
+After upgrading an existing Egress deployment, check whether the previous setup left its generated credential file at `/tmp/egress-config.yaml` on the VM. Confirm its ownership and origin before removing it. Rotate the LiveKit credentials if other users could read the file.
 
 ### Set Up Coturn
 

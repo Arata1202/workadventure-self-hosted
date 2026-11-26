@@ -300,7 +300,8 @@ services:
 
   livekit:
     image: livekit/livekit-server:v1.13.11
-    entrypoint: ["/entrypoint.sh"]
+    entrypoint: ["/render-livekit-config.sh"]
+    command: ["/livekit-server", "--config", "/run/livekit-config/config.yaml"]
     environment:
       - LIVEKIT_API_KEY
       - LIVEKIT_API_SECRET
@@ -317,9 +318,11 @@ services:
       - "traefik.http.routers.livekit-ssl.service=livekit"
       - "traefik.http.routers.livekit.entryPoints=web"
       - "traefik.http.services.livekit.loadbalancer.server.port=7880"
+    tmpfs:
+      - /run/livekit-config:rw,noexec,nosuid,nodev,size=1m,mode=1777
     volumes:
-      - ./livekit/entrypoint.sh:/entrypoint.sh:ro
-      - ./livekit/livekit-config.template.yaml:/etc/livekit/livekit-config.template.yaml:ro
+      - ./scripts/render-livekit-config.sh:/render-livekit-config.sh:ro
+      - ./livekit/livekit-config.template.yaml:/etc/livekit-config.template.yaml:ro
     depends_on:
       redis:
         condition: service_started
@@ -327,7 +330,8 @@ services:
 
   egress:
     image: livekit/egress:v1.15.0
-    entrypoint: ["/entrypoint.sh"]
+    entrypoint: ["/render-livekit-config.sh"]
+    command: ["/tini", "--", "/entrypoint.sh"]
     cap_add:
       - SYS_ADMIN
     privileged: true
@@ -337,11 +341,14 @@ services:
     environment:
       LIVEKIT_API_KEY:
       LIVEKIT_API_SECRET:
+      EGRESS_CONFIG_FILE: /run/livekit-config/config.yaml
       DISABLE_CUDA: "true"
       DISABLE_NVENC: "true"
+    tmpfs:
+      - /run/livekit-config:rw,noexec,nosuid,nodev,size=1m,mode=1777
     volumes:
-      - ./egress/entrypoint.sh:/entrypoint.sh:ro
-      - ./egress/egress-config.template.yaml:/etc/egress/egress-config.template.yaml:ro
+      - ./scripts/render-livekit-config.sh:/render-livekit-config.sh:ro
+      - ./egress/egress-config.template.yaml:/etc/livekit-config.template.yaml:ro
       - /tmp:/tmp:rw
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8081/health"]
@@ -439,7 +446,7 @@ services:
 
   synapse:
     image: matrixdotorg/synapse:v1.140.0
-    entrypoint: ["/entrypoint.sh"]
+    entrypoint: ["/entrypoint.py"]
     environment:
       DOMAIN: "${DOMAIN}"
       MATRIX_REGISTRATION_SHARED_SECRET: "${MATRIX_REGISTRATION_SHARED_SECRET}"
@@ -466,7 +473,7 @@ services:
       traefik.http.routers.matrix-ssl.service: "matrix"
     volumes:
       - synapse-data:/data
-      - ./synapse/entrypoint.sh:/entrypoint.sh:ro
+      - ./synapse/entrypoint.py:/entrypoint.py:ro
       - ./synapse/homeserver.template.yaml:/homeserver.template.yaml:ro
       - ./synapse/log.config.yaml:/log.config.yaml:ro
     depends_on:

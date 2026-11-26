@@ -8,6 +8,7 @@ maps/.env
 *.tfstate
 *.tfstate.*
 *.tfvars
+*.tfvars.json
 !*.tfvars.example
 crash.log
 crash.*.log
@@ -15,3 +16,6 @@ override.tf
 override.tf.json
 *_override.tf
 *_override.tf.json
+/.map-save-*/
+
+__pycache__/

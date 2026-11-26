@@ -9,7 +9,7 @@ redis:
   password: ""
   db: 2
 keys:
-  "${LIVEKIT_API_KEY}": "${LIVEKIT_API_SECRET}"
+  ${LIVEKIT_API_KEY}: ${LIVEKIT_API_SECRET}
 logging:
   json: false
   level: info
