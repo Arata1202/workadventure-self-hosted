@@ -22,8 +22,10 @@ LC_ALL=C awk '
     }
     {
         line = $0
-        while (match(line, /\$\{LIVEKIT_API_(KEY|SECRET)\}/)) {
+        # The replacement is already YAML-quoted, so consume any template quotes.
+        while (match(line, /"?\$\{LIVEKIT_API_(KEY|SECRET)\}"?/)) {
             token = substr(line, RSTART, RLENGTH)
+            gsub(/"/, "", token)
             printf "%s%s", substr(line, 1, RSTART - 1), (token == "${LIVEKIT_API_KEY}" ? key : secret)
             line = substr(line, RSTART + RLENGTH)
         }
